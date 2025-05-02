@@ -1,4 +1,4 @@
-#include "SignalReplyModule.h"
+#include "AutoResponseModule.h"
 #include "MeshService.h"
 #include "configuration.h"
 #include "main.h"
@@ -11,7 +11,7 @@ std::string awayMessage = "";
 std::unordered_map<uint32_t, std::chrono::steady_clock::time_point> lastReplyTime;
 const std::chrono::seconds replyCooldown(500);
 
-ProcessMessage SignalReplyModule::handleReceived(const meshtastic_MeshPacket &currentRequest)
+ProcessMessage AutoResponseModule::handleReceived(const meshtastic_MeshPacket &currentRequest)
 {
     auto &p = currentRequest.decoded;
     char messageRequest[250];
@@ -28,21 +28,21 @@ ProcessMessage SignalReplyModule::handleReceived(const meshtastic_MeshPacket &cu
             
             char confirmMessage[250];
             snprintf(confirmMessage, sizeof(confirmMessage), "Away mode enabled. Message: %s", awayMessage.c_str());
-            LOG_INFO("SignalReplyModule: %s", confirmMessage);
+            LOG_INFO("AutoResponseModule: %s", confirmMessage);
             
             return ProcessMessage::STOP;
         } else if (strcmp(messageRequest, "!away") == 0) {
             isAwayModeEnabled = true;
             awayMessage = "I am currently away and will respond when I return.";
             
-            LOG_INFO("SignalReplyModule: Away mode enabled with default message");
+            LOG_INFO("AutoResponseModule: Away mode enabled with default message");
             
             return ProcessMessage::STOP;
         } else if (strcmp(messageRequest, "!back") == 0) {
             isAwayModeEnabled = false;
             awayMessage = "";
             
-            LOG_INFO("SignalReplyModule: Away mode disabled");
+            LOG_INFO("AutoResponseModule: Away mode disabled");
             
             return ProcessMessage::STOP;
         }
@@ -76,14 +76,14 @@ ProcessMessage SignalReplyModule::handleReceived(const meshtastic_MeshPacket &cu
         
         meshtastic_NodeInfoLite *nodeSender = nodeDB->getMeshNode(currentRequest.from);
         const char *username = nodeSender->has_user ? nodeSender->user.short_name : std::to_string(currentRequest.from).c_str();
-        LOG_INFO("SignalReplyModule: Sent away message to %s", username);
+        LOG_INFO("AutoResponseModule: Sent away message to %s", username);
     }
     
     notifyObservers(&currentRequest);
     return ProcessMessage::CONTINUE;
 }
 
-bool SignalReplyModule::wantPacket(const meshtastic_MeshPacket *p)
+bool AutoResponseModule::wantPacket(const meshtastic_MeshPacket *p)
 {
     return MeshService::isTextPayload(p);
 }

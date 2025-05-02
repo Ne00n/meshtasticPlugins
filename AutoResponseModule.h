@@ -4,15 +4,15 @@
 /**
  * A simple example module that just replies with "Message received" to any message it receives.
  */
-class SignalReplyModule : public SinglePortModule, public Observable<const meshtastic_MeshPacket *>
+class AutoResponseModule : public SinglePortModule, public Observable<const meshtastic_MeshPacket *>
 {
   public:
     /** Constructor
      * name is for debugging output
      */
-    SignalReplyModule() : SinglePortModule("XXXXMod", meshtastic_PortNum_TEXT_MESSAGE_APP) {}
+     AutoResponseModule() : SinglePortModule("XXXXMod", meshtastic_PortNum_TEXT_MESSAGE_APP) {}
 
-  //virtual ~SignalReplyModule() {}
+  //virtual ~AutoResponseModule() {}
 
   protected:
     /** For reply module we do all of our processing in the (normally optional)
